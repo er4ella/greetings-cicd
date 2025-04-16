@@ -1,0 +1,33 @@
+name: Run tests
+description: Run API tests against specified environment
+inputs:
+  repo:
+    description: 'Repository to clone'
+    required: true
+  path:
+    description: 'Directory to clone into'
+    required: true
+  env:
+    description: 'Environment name'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout CI/CD repo
+      uses: actions/checkout@v4
+
+    - name: Checkout tests repo
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.repo }}
+        path: ${{ inputs.path }}
+
+    - name: Install test dependencies
+      working-directory: ${{ inputs.path }}
+      run: npm install
+      shell: bash
+
+    - name: Run tests
+      working-directory: ${{ inputs.path }}
+      run: npm run greetings greetings_${{ inputs.env }}
+      shell: bash
