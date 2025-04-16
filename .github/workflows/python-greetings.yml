@@ -72,3 +72,147 @@ jobs:
       - name: Run dev tests
         working-directory: course-tests
         run: npm run greetings greetings_dev
+  
+  deploy-to-staging:
+    runs-on: self-hosted
+    needs: tests-on-dev
+    steps:
+      - name: Checkout CI/CD repo
+        uses: actions/checkout@v4
+
+      - name: Print deployment message
+        run: echo "Deploying to staging environment"
+
+      - name: Checkout python-greetings repo
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Stop existing PM2 service (in case if such already exists)
+        working-directory: python-greetings
+        run: pm2 delete greetings-app-staging || true
+
+      - name: Start app with PM2 on port 7002
+        working-directory: python-greetings
+        run: pm2 start app.py --name greetings-app-staging -- --port 7002
+
+  tests-on-staging:
+    runs-on: self-hosted
+    needs: deploy-to-staging
+    steps:
+      - name: Checkout CI/CD repo
+        uses: actions/checkout@v4
+
+      - name: Print testing message
+        run: echo "Running tests on staging environment"
+
+      - name: Checkout course-js-api-framework repo
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/course-js-api-framework
+          path: course-tests
+
+      - name: Install test dependencies
+        working-directory: course-tests
+        run: npm install
+
+      - name: Run staging tests
+        working-directory: course-tests
+        run: npm run greetings greetings_staging
+
+  deploy-to-preprod:
+    runs-on: self-hosted
+    needs: tests-on-staging
+    steps:
+      - name: Checkout CI/CD repo
+        uses: actions/checkout@v4
+
+      - name: Print deployment message
+        run: echo "Deploying to preprod environment"
+
+      - name: Checkout python-greetings repo
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Stop existing PM2 service (in case if such already exist)
+        working-directory: python-greetings
+        run: pm2 delete greetings-app-preprod || true
+
+      - name: Start app with PM2 on port 7003
+        working-directory: python-greetings
+        run: pm2 start app.py --name greetings-app-preprod -- --port 7003
+
+  tests-on-preprod:
+    runs-on: self-hosted
+    needs: deploy-to-preprod
+    steps:
+      - name: Checkout CI/CD repo
+        uses: actions/checkout@v4
+
+      - name: Print testing message
+        run: echo "Running tests on preprod environment"
+
+      - name: Checkout course-js-api-framework repo
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/course-js-api-framework
+          path: course-tests
+
+      - name: Install test dependencies
+        working-directory: course-tests
+        run: npm install
+
+      - name: Run preprod tests
+        working-directory: course-tests
+        run: npm run greetings greetings_preprod
+
+  deploy-to-prod:
+    runs-on: self-hosted
+    needs: tests-on-preprod
+    steps:
+      - name: Checkout CI/CD repo
+        uses: actions/checkout@v4
+
+      - name: Print deployment message
+        run: echo "Deploying to prod environment"
+
+      - name: Checkout python-greetings repo
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Stop existing PM2 service (in case if such already exists)
+        working-directory: python-greetings
+        run: pm2 delete greetings-app-prod || true
+
+      - name: Start app with PM2 on port 7004
+        working-directory: python-greetings
+        run: pm2 start app.py --name greetings-app-prod -- --port 7004
+
+  tests-on-prod:
+    runs-on: self-hosted
+    needs: deploy-to-prod
+    steps:
+      - name: Checkout CI/CD repo
+        uses: actions/checkout@v4
+
+      - name: Print testing message
+        run: echo "Running tests on prod environment"
+
+      - name: Checkout course-js-api-framework repo
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/course-js-api-framework
+          path: course-tests
+
+      - name: Install test dependencies
+        working-directory: course-tests
+        run: npm install
+
+      - name: Run prod tests
+        working-directory: course-tests
+        run: npm run greetings greetings_prod
