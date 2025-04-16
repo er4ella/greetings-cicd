@@ -19,25 +19,13 @@ jobs:
     runs-on: self-hosted
     needs: install-pip-deps
     steps:
-      - name: Checkout CI/CD repo
-        uses: actions/checkout@v4
-
-      - name: Print deployment message
-        run: echo "Deploying to dev environment"
-
-      - name: Checkout python-greetings repo
-        uses: actions/checkout@v4
+      - name: Deploy to dev using composite action
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
+          repo: mtararujs/python-greetings
           path: python-greetings
-
-      - name: Stop existing PM2 service (in case if such already exists)
-        working-directory: python-greetings
-        run: pm2 delete greetings-app-dev || true
-
-      - name: Start app with PM2 on port 7001
-        working-directory: python-greetings
-        run: pm2 start app.py --name greetings-app-dev -- --port 7001
+          env: dev
+          port: 7001
 
   tests-on-dev:
     runs-on: self-hosted
@@ -67,25 +55,13 @@ jobs:
     runs-on: self-hosted
     needs: tests-on-dev
     steps:
-      - name: Checkout CI/CD repo
-        uses: actions/checkout@v4
-
-      - name: Print deployment message
-        run: echo "Deploying to staging environment"
-
-      - name: Checkout python-greetings repo
-        uses: actions/checkout@v4
+      - name: Deploy to staging using composite action
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
+          repo: mtararujs/python-greetings
           path: python-greetings
-
-      - name: Stop existing PM2 service (in case if such already exists)
-        working-directory: python-greetings
-        run: pm2 delete greetings-app-staging || true
-
-      - name: Start app with PM2 on port 7002
-        working-directory: python-greetings
-        run: pm2 start app.py --name greetings-app-staging -- --port 7002
+          env: staging
+          port: 7002
 
   tests-on-staging:
     runs-on: self-hosted
@@ -115,25 +91,13 @@ jobs:
     runs-on: self-hosted
     needs: tests-on-staging
     steps:
-      - name: Checkout CI/CD repo
-        uses: actions/checkout@v4
-
-      - name: Print deployment message
-        run: echo "Deploying to preprod environment"
-
-      - name: Checkout python-greetings repo
-        uses: actions/checkout@v4
+      - name: Deploy to preprod using composite action
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
+          repo: mtararujs/python-greetings
           path: python-greetings
-
-      - name: Stop existing PM2 service (in case if such already exist)
-        working-directory: python-greetings
-        run: pm2 delete greetings-app-preprod || true
-
-      - name: Start app with PM2 on port 7003
-        working-directory: python-greetings
-        run: pm2 start app.py --name greetings-app-preprod -- --port 7003
+          env: preprod
+          port: 7003
 
   tests-on-preprod:
     runs-on: self-hosted
@@ -163,25 +127,13 @@ jobs:
     runs-on: self-hosted
     needs: tests-on-preprod
     steps:
-      - name: Checkout CI/CD repo
-        uses: actions/checkout@v4
-
-      - name: Print deployment message
-        run: echo "Deploying to prod environment"
-
-      - name: Checkout python-greetings repo
-        uses: actions/checkout@v4
+      - name: Deploy to prod using composite action
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
+          repo: mtararujs/python-greetings
           path: python-greetings
-
-      - name: Stop existing PM2 service (in case if such already exists)
-        working-directory: python-greetings
-        run: pm2 delete greetings-app-prod || true
-
-      - name: Start app with PM2 on port 7004
-        working-directory: python-greetings
-        run: pm2 start app.py --name greetings-app-prod -- --port 7004
+          env: prod
+          port: 7004
 
   tests-on-prod:
     runs-on: self-hosted
