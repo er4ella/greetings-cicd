@@ -1,0 +1,36 @@
+name: Deploy service via PM2
+description: Deploys Python app with PM2
+inputs:
+  repo:
+    description: 'Repository to clone'
+    required: true
+  path:
+    description: 'Directory to clone into'
+    required: true
+  env:
+    description: 'Environment name'
+    required: true
+  port:
+    description: 'Port to run the service on'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout CI/CD repo
+      uses: actions/checkout@v4
+
+    - name: Checkout app repo
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.repo }}
+        path: ${{ inputs.path }}
+
+    - name: Stop existing PM2 service (if such already exist)
+      working-directory: ${{ inputs.path }}
+      run: pm2 delete greetings-app-${{ inputs.env }} || true
+      shell: bash
+
+    - name: Start app with PM2
+      working-directory: ${{ inputs.path }}
+      run: pm2 start app.py --name greetings-app-${{ inputs.env }} -- --port ${{ inputs.port }}
+      shell: bash
