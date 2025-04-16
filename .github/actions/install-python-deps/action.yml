@@ -1,0 +1,25 @@
+name: Install Python dependencies
+description: Checkout repos and install Python dependencies
+inputs:
+  repo:
+    description: 'Repository to clone'
+    required: true
+  path:
+    description: 'Directory to clone into'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout CI/CD repo
+      uses: actions/checkout@v4
+
+    - name: Checkout target repo
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.repo }}
+        path: ${{ inputs.path }}
+
+    - name: Install Python dependencies
+      working-directory: ${{ inputs.path }}
+      run: pip3 install -r requirements.txt
+      shell: bash
