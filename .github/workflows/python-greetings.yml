@@ -1,0 +1,26 @@
+name: CI/CD pipeline for Python microservice
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  install-pip-deps:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout CI/CD repo
+        uses: actions/checkout@v4
+
+      - name: Print installing message
+        run: echo "Installing all required dependencies..."
+
+      - name: Checkout python-greetings repo
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Install Python dependencies
+        working-directory: python-greetings
+        run: pip3 install -r requirements.txt
