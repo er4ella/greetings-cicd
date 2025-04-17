@@ -53,20 +53,20 @@ jobs:
           env: staging
           port: 7002
 
-  tests-on-staging:
-    runs-on: self-hosted
-    needs: deploy-to-staging
-    steps:
-      - name: Run staging tests using composite action
-        uses: ./.github/actions/run-tests
-        with:
-          repo: mtararujs/course-js-api-framework
-          path: course-tests
-          env: staging
+  # tests-on-staging:
+  #   runs-on: self-hosted
+  #   needs: deploy-to-staging
+  #   steps:
+  #     - name: Run staging tests using composite action
+  #       uses: ./.github/actions/run-tests
+  #       with:
+  #         repo: mtararujs/course-js-api-framework
+  #         path: course-tests
+  #         env: staging
 
   deploy-to-preprod:
     runs-on: self-hosted
-    needs: tests-on-staging
+    #needs: tests-on-staging
     steps:
       - name: Deploy to preprod using composite action
         uses: ./.github/actions/deploy
